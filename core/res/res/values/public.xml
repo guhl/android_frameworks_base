@@ -3658,6 +3658,7 @@
   <java-symbol type="string" name="config_legacyUmsLunFile" />
   <java-symbol type="bool" name="config_forceDisableHardwareKeyboard" />
   <java-symbol type="array" name="config_telephony_set_audioparameters" />
+  <java-symbol type="bool" name="config_autoBrightnessButtonKeyboard" />
 
 <!-- ==============================================================
      Resources added by The Evervolv Project v3.x.x
