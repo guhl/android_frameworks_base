@@ -759,6 +759,7 @@ public class SignalStrength implements Parcelable {
         if (DBG) log("Lte rsrp level: "+levelLteRsrp
                 + " snr level: " + levelLteRssnr + " level: " + level);
         return level;
+    }
 
     /**
      * Get LTE sixbar as level 0..6
