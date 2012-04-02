@@ -446,6 +446,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Behavior of trackball unlock
     boolean mTrackballUnlockScreen;
 
+    // Kill app longpress back timeout
+    int mKillAppLongpressBackTimeout;
+
     // Behavior of POWER button while in-call and screen on.
     // (See Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR.)
     int mIncallPowerBehavior;
@@ -515,6 +518,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.TRACKBALL_WAKE_SCREEN), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.TRACKBALL_UNLOCK_SCREEN), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.KILL_APP_LONGPRESS_BACK_TIMEOUT), false, this);
             updateSettings();
         }
 
@@ -1029,6 +1034,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.TRACKBALL_WAKE_SCREEN, 1) == 1);
             mTrackballUnlockScreen = (Settings.System.getInt(resolver,
                     Settings.System.TRACKBALL_UNLOCK_SCREEN, 0) == 1);
+            mKillAppLongpressBackTimeout = (Settings.System.getInt(resolver,
+                    Settings.System.KILL_APP_LONGPRESS_BACK_TIMEOUT, 1000));
             // set up rotation lock state
             mUserRotationMode = (accelerometerDefault == 0)
                 ? WindowManagerPolicy.USER_ROTATION_LOCKED
@@ -1747,7 +1754,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (Settings.Secure.getInt(mContext.getContentResolver(),
                     Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
                 if (down && repeatCount == 0) {
-                    mHandler.postDelayed(mBackLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
+                    mHandler.postDelayed(mBackLongPress, mKillAppLongpressBackTimeout);
                 }
             }
         }

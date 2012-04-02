@@ -2353,6 +2353,12 @@ public final class Settings {
         public static final String TRACKBALL_UNLOCK_SCREEN = "trackball_unlock_screen";
 
         /**
+         * Duration in milliseconds a user needs to hold down the back button to kill a process.  The value is integer (milliseconds).
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_BACK_TIMEOUT = "pref_kill_app_longpress_back_timeout";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
