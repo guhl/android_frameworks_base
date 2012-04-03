@@ -972,7 +972,7 @@ void InputDevice::process(const RawEvent* rawEvents, size_t count) {
                 z_data = rawEvent->value;
                 touched = (0 != z_data);
             }
-            else if (rawEvent->scanCode == ABS_MT_POSITION_Y) {
+            else if (rawEvent->scanCode == ABS_MT_POSITION_Y && rawEvent->type != EV_KEY) {
 
                 RawEvent event;
                 memset(&event, 0, sizeof(event));
