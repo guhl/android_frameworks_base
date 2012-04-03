@@ -876,7 +876,7 @@ public class PowerManagerService extends IPowerManager.Stub
             switch (wl.flags & LOCK_MASK)
             {
                 case PowerManager.FULL_WAKE_LOCK:
-                    if (mAutoBrightnessButtonKeyboard) {
+                    if (mAutoBrightessEnabled) {
                         wl.minState = SCREEN_BRIGHT;
                     } else {
                         wl.minState = (mKeyboardVisible ? ALL_BRIGHT : SCREEN_BUTTON_BRIGHT);
@@ -1831,7 +1831,7 @@ public class PowerManagerService extends IPowerManager.Stub
                 return;
             }
 
-            if (!mBootCompleted && !mAutoBrightnessButtonKeyboard) {
+            if (!mBootCompleted && !mUseSoftwareAutoBrightness) {
                 newState |= ALL_BRIGHT;
             }
 
@@ -2190,12 +2190,12 @@ public class PowerManagerService extends IPowerManager.Stub
             // light is on, since users may want to specify a custom brightness setting
             // that disables the button (or keyboard) backlight entirely in low-ambient
             // light situations.
-            mButtonLight.setBrightness(mLightSensorButtonBrightness >= 0 && value > 0 ?
+            mButtonLight.setBrightness(mAutoBrightessEnabled && mLightSensorButtonBrightness >= 0 && value > 0 ?
                                        mLightSensorButtonBrightness : value);
 
         }
         if ((mask & KEYBOARD_BRIGHT_BIT) != 0) {
-            mKeyboardLight.setBrightness(mLightSensorKeyboardBrightness >= 0 && value > 0 ?
+            mKeyboardLight.setBrightness(mAutoBrightessEnabled && mLightSensorKeyboardBrightness >= 0 && value > 0 ?
                                          mLightSensorKeyboardBrightness : value);
         }
     }
@@ -2388,7 +2388,10 @@ public class PowerManagerService extends IPowerManager.Stub
         }
         if (mButtonBrightnessOverride >= 0) {
             brightness = mButtonBrightnessOverride;
-        } else if (mLightSensorButtonBrightness >= 0 && mAutoBrightnessButtonKeyboard) {
+        } else if (!mAutoBrightessEnabled) {
+            // Light sensor is not on, mLightSensorButtonBrightness has not been cleared
+            brightness = getPreferredBrightness();
+        } else if (mLightSensorButtonBrightness >= 0 && mUseSoftwareAutoBrightness) {
             brightness = mLightSensorButtonBrightness;
         }
         if (brightness > 0) {
@@ -2410,7 +2413,10 @@ public class PowerManagerService extends IPowerManager.Stub
             brightness = 0;
         } else if (mButtonBrightnessOverride >= 0) {
             brightness = mButtonBrightnessOverride;
-        } else if (mLightSensorKeyboardBrightness >= 0 && mAutoBrightnessButtonKeyboard) {
+        } else if (!mAutoBrightessEnabled && mKeyboardVisible) {
+            // Light sensor is not on, mLightSensorButtonBrightness has not been cleared
+            brightness = getPreferredBrightness();
+        } else if (mLightSensorKeyboardBrightness >= 0 && mUseSoftwareAutoBrightness) {
             brightness =  mLightSensorKeyboardBrightness;
         }
         if (brightness > 0) {
@@ -2533,11 +2539,9 @@ public class PowerManagerService extends IPowerManager.Stub
             if (mLastEventTime <= time || force) {
                 mLastEventTime = time;
                 if ((mUserActivityAllowed && !mProximitySensorActive) || force) {
-                    if (!mAutoBrightnessButtonKeyboard) {
-                        // Turn on button (and keyboard) backlights on any event, so that they
-                        // don't suddenly disappear when the lock screen is unlocked (OTHER_EVENT),
-                        // and so capacitive buttons can be found on devices where they lack
-                        // identifying surface features.
+                    // Only turn on button backlights if a button was pressed
+                    // and auto brightness is disabled
+                    if (eventType == BUTTON_EVENT && !mAutoBrightessEnabled) {
                         mUserState = (mKeyboardVisible ? ALL_BRIGHT : SCREEN_BUTTON_BRIGHT);
                     } else {
                         // don't clear button/keyboard backlights when the screen is touched.
@@ -2790,10 +2794,10 @@ public class PowerManagerService extends IPowerManager.Stub
             mLightSensorValue = value;
             if ((mPowerState & BATTERY_LOW_BIT) == 0) {
                 // use maximum light sensor value seen since screen went on for LCD to avoid flicker
-                // we only do this if we are undocked, since lighting should be stable when
+                // we only do this if we are docked, since lighting should be stable when
                 // stationary in a dock.
                 int lcdValue = getAutoBrightnessValue(
-                        (mIsDocked ? value : mHighestLightSensorValue),
+                        (!mIsDocked ? value : mHighestLightSensorValue),
                         mLastLcdValue,
                         (mCustomLightEnabled ? mCustomLightLevels : mAutoBrightnessLevels),
                         (mCustomLightEnabled ? mCustomLcdValues : mLcdBacklightValues));
@@ -2826,10 +2830,10 @@ public class PowerManagerService extends IPowerManager.Stub
                     }
                     mLastLcdValue = value;
                 }
-                if (mButtonBrightnessOverride < 0 && mAutoBrightnessButtonKeyboard) {
+                if (mButtonBrightnessOverride < 0) {
                     mButtonLight.setBrightness(buttonValue);
                 }
-                if ((mButtonBrightnessOverride < 0 || !mKeyboardVisible) && mAutoBrightnessButtonKeyboard) {
+                if (mButtonBrightnessOverride < 0 || !mKeyboardVisible) {
                     mKeyboardLight.setBrightness(keyboardValue);
                 }
             }
@@ -2972,6 +2976,7 @@ public class PowerManagerService extends IPowerManager.Stub
                 // will take care of turning on due to a true change to the lid
                 // switch and synchronized with the lock screen.
                 if ((mPowerState & SCREEN_ON_BIT) != 0) {
+                    if (mSpew) Slog.w(TAG, "mKeyboardVisible:" + mKeyboardVisible + " mAutoBrightessEnabled: " + mAutoBrightessEnabled + " mUseSoftwareAutoBrightness:" + mUseSoftwareAutoBrightness + " mLightSensorValue:" + mLightSensorValue);
                     if (mUseSoftwareAutoBrightness) {
                         // force recompute of backlight values
                         if (mLightSensorValue >= 0) {
@@ -2979,9 +2984,16 @@ public class PowerManagerService extends IPowerManager.Stub
                             mLightSensorValue = -1;
                             lightSensorChangedLocked(value);
                             lightFilterReset((int)mLightSensorValue);
+                        } else {
+                            // LightSensor is not on
+                            updateLightsLocked(mPowerState, LIGHTS_MASK);
                         }
                     }
                     userActivity(SystemClock.uptimeMillis(), false, BUTTON_EVENT, true);
+                }
+                else if (!visible) {
+                    if (mSpew) Slog.w(TAG, "keyboard not visible, turning off");
+                    mKeyboardLight.turnOff();
                 }
             }
         }
@@ -3306,7 +3318,7 @@ public class PowerManagerService extends IPowerManager.Stub
         // wait until sensors are enabled before turning on screen.
         // some devices will not activate the light sensor properly on boot
         // unless we do this.
-        if (mAutoBrightnessButtonKeyboard) {
+        if (mAutoBrightessEnabled) {
             // turn the screen on
             setPowerState(SCREEN_BRIGHT);
         } else {
