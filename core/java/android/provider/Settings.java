@@ -2370,6 +2370,13 @@ public final class Settings {
         public static final String KILL_APP_LONGPRESS_BACK_TIMEOUT = "pref_kill_app_longpress_back_timeout";
 
         /**
+         * whether to show the IME switcher when typing in the statusbar. Boolean value.
+         * 
+         * @hide
+         */
+        public static final String SHOW_STATUSBAR_IME_SWITCHER = "show_statusbar_ime_switcher";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
