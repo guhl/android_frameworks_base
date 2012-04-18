@@ -2311,18 +2311,6 @@ public class PowerManagerService extends IPowerManager.Stub
                 final boolean electrifying =
                         ((mElectronBeamAnimationOff && turningOff) ||
                          (mElectronBeamAnimationOn && turningOn));
-                // If telephone is ringing and not idle then we will jumpToTargetLocked instead
-                ITelephony telephonyService = getTelephonyService();
-                boolean telephonyIdleCheck = true;
-                if (telephonyService != null) {
-                    try {
-                        if (telephonyService.isRinging()) {
-                            telephonyIdleCheck = false;
-                        }
-                    } catch (RemoteException ex) {
-                        Log.w(TAG, "ITelephony threw RemoteException", ex);
-                    }
-                }
                 if (!electrifying && (mAnimateScreenLights || !turningOff)) {
                     long now = SystemClock.uptimeMillis();
                     boolean more = mScreenBrightness.stepLocked();
@@ -2333,13 +2321,25 @@ public class PowerManagerService extends IPowerManager.Stub
                     // It's pretty scary to hold mLocks for this long, and we should
                     // redesign this, but it works for now.
                     if (turningOff) {
-                        if (electrifying && telephonyIdleCheck) {
+                        if (electrifying) {
                             nativeStartSurfaceFlingerOffAnimation(
                                     mScreenOffReason == WindowManagerPolicy.OFF_BECAUSE_OF_PROX_SENSOR
                                     ? 0 : mAnimationSetting);
                         }
                         mScreenBrightness.jumpToTargetLocked();
                     } else if (turningOn) {
+                        // If telephone is ringing and not idle then we will jumpToTargetLocked instead
+                        ITelephony telephonyService = getTelephonyService();
+                        boolean telephonyIdleCheck = true;
+                        if (telephonyService != null) {
+                            try {
+                                if (telephonyService.isRinging()) {
+                                    telephonyIdleCheck = false;
+                                }
+                            } catch (RemoteException ex) {
+                                Log.w(TAG, "ITelephony threw RemoteException", ex);
+                            }
+                        }
                         if (electrifying && telephonyIdleCheck) {
                             jumpToTarget();
                             nativeStartSurfaceFlingerOnAnimation(mAnimationSetting);
