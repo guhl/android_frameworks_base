@@ -1144,16 +1144,6 @@ public class PowerManagerService extends IPowerManager.Stub
             }
         }
     }
-    /*
-    static ITelephony getTelephonyService() {
-        ITelephony telephonyService = ITelephony.Stub.asInterface(
-                ServiceManager.checkService(Context.TELEPHONY_SERVICE));
-        if (telephonyService == null) {
-            Log.w(TAG, "Unable to find ITelephony interface.");
-        }
-        return telephonyService;
-    }
-    */
     private static String lockType(int type)
     {
         switch (type)
