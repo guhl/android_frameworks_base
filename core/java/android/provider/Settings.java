@@ -2358,12 +2358,6 @@ public final class Settings {
         public static final String STATUSBAR_6BAR_SIGNAL = "statusbar_6bar_signal";
 
         /**
-         * Toggle for the volume lock screen.
-         * @hide
-         */
-        public static final String VOLUME_LOCK_SCREEN = "volume_lock_screen";
-
-        /**
          * Whether to wake the screen with the trackball. The value is boolean (1 or 0).
          * @hide
          */
