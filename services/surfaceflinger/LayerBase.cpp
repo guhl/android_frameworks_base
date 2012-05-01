@@ -605,6 +605,7 @@ void LayerBase::drawS3DUIWithOpenGL(const Region& clip) const
     int composeS3DFormat = mQCLayer->needsS3DCompose();
     int xoffset = fbWidth/2 ;
     int yoffset = fbHeight/2;
+    glClearColor(0,0,0,0);
     // Calculate the new vertices for S3D conversion
     switch (composeS3DFormat) {
         case QCBaseLayer::eS3D_SIDE_BY_SIDE:
@@ -620,6 +621,7 @@ void LayerBase::drawS3DUIWithOpenGL(const Region& clip) const
                 const Rect& r = *it++;
                 const GLint sy = fbHeight - (r.top + r.height());
                 glScissor(r.left/2, sy, r.width()/2, r.height());
+                glClear(GL_COLOR_BUFFER_BIT);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, pindices);
             }
 
@@ -630,6 +632,7 @@ void LayerBase::drawS3DUIWithOpenGL(const Region& clip) const
                 const Rect& r = *it++;
                 const GLint sy = fbHeight - (r.top + r.height());
                 glScissor(xoffset+r.left/2, sy, r.width()/2, r.height());
+                glClear(GL_COLOR_BUFFER_BIT);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, pindices);
             }
             break;
@@ -645,7 +648,8 @@ void LayerBase::drawS3DUIWithOpenGL(const Region& clip) const
             while (it != end) {
                 const Rect& r = *it++;
                 const GLint sy = fbHeight - (r.top + r.height());
-                glScissor(r.left, yoffset + sy/2, r.width(), r.height()/2);
+                glScissor(r.left, sy/2, r.width(), r.height()/2);
+                glClear(GL_COLOR_BUFFER_BIT);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, pindices);
             }
 
@@ -655,7 +659,8 @@ void LayerBase::drawS3DUIWithOpenGL(const Region& clip) const
             while (it != end) {
                 const Rect& r = *it++;
                 const GLint sy = fbHeight - (r.top + r.height());
-                glScissor(r.left, sy/2, r.width(), r.height()/2);
+                glScissor(r.left, yoffset+sy/2, r.width(), r.height()/2);
+                glClear(GL_COLOR_BUFFER_BIT);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, pindices);
             }
             break;
