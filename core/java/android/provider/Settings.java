@@ -1557,12 +1557,17 @@ public final class Settings {
         /**
          * Volume Overlay Mode, This is behaviour of the volume overlay panel
          * Defaults to 0 - which is simple
+         * @hide
          */
         public static final String MODE_VOLUME_OVERLAY = "mode_volume_overlay";
 
+        /** @hide */
         public static final int VOLUME_OVERLAY_SINGLE = 0;
+        /** @hide */
         public static final int VOLUME_OVERLAY_EXPANDABLE = 1;
+        /** @hide */
         public static final int VOLUME_OVERLAY_EXPANDED = 2;
+        /** @hide */
         public static final int VOLUME_OVERLAY_NONE = 3;
 
         /**
@@ -2408,7 +2413,48 @@ public final class Settings {
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
 
         /**
-         * Statusbar toggle for 6 bar signal strength.
+         * Show the weather on the lock screen
+         * @hide
+         */
+        public static final String LOCKSCREEN_WEATHER = "lockscreen_weather";
+
+        /**
+         * Show the current weather location on the lock screen
+         * @hide
+         */
+        public static final String WEATHER_SHOW_LOCATION = "weather_show_location";
+
+        /**
+         * Show the current weather location on the lock screen
+         * @hide
+         */
+        public static final String WEATHER_SHOW_TIMESTAMP = "weather_show_timestamp";
+
+        /**
+         * Use the custom/manually configured weather location
+         * @hide
+         */
+        public static final String WEATHER_USE_CUSTOM_LOCATION = "weather_use_custom_location";
+
+        /**
+         * Stores the custom/manually configured weather location
+         * @hide
+         */
+        public static final String WEATHER_CUSTOM_LOCATION = "weather_custom_location";
+
+        /**
+         * Stores the weather update frequency
+         * @hide
+         */
+        public static final String WEATHER_UPDATE_INTERVAL = "weather_update_interval";
+
+        /**
+         * Use Metric measurements (celcius, km/h) for weather data
+         * @hide
+         */
+        public static final String WEATHER_USE_METRIC = "weather_use_metric";
+
+        /**         * Statusbar toggle for 6 bar signal strength.
          * @hide
          */
         public static final String STATUSBAR_6BAR_SIGNAL = "statusbar_6bar_signal";
