@@ -18,6 +18,7 @@ package com.android.server;
 
 import com.android.internal.app.IBatteryStats;
 import com.android.internal.app.ShutdownThread;
+import com.android.internal.telephony.ITelephony;
 import com.android.server.am.BatteryStatsService;
 
 import android.app.ActivityManagerNative;
@@ -49,6 +50,7 @@ import android.os.Power;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.WorkSource;
 import android.os.SystemProperties;
@@ -350,6 +352,15 @@ public class PowerManagerService extends IPowerManager.Stub
         }
     }
     */
+
+    static ITelephony getTelephonyService() {
+        ITelephony telephonyService = ITelephony.Stub.asInterface(
+                ServiceManager.checkService(Context.TELEPHONY_SERVICE));
+        if (telephonyService == null) {
+            Log.w(TAG, "Unable to find ITelephony interface.");
+        }
+        return telephonyService;
+    }
 
     /**
      * This class works around a deadlock between the lock in PowerManager.WakeLock
@@ -2333,7 +2344,19 @@ public class PowerManagerService extends IPowerManager.Stub
                         }
                         mScreenBrightness.jumpToTargetLocked();
                     } else if (turningOn) {
-                        if (electrifying) {
+                        // If telephone is ringing and not idle then we will jumpToTargetLocked instead
+                        ITelephony telephonyService = getTelephonyService();
+                        boolean telephonyIdleCheck = true;
+                        if (telephonyService != null) {
+                            try {
+                                if (telephonyService.isRinging()) {
+                                    telephonyIdleCheck = false;
+                                }
+                            } catch (RemoteException ex) {
+                                Log.w(TAG, "ITelephony threw RemoteException", ex);
+                            }
+                        }
+                        if (electrifying && telephonyIdleCheck) {
                             int delay=mContext.getResources().getInteger(com.android.internal.R.integer.config_screenOnAnimation);
                             if(delay>0) {
                                 startElectronBeamDelayed(new Runnable() {
