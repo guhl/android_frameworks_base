@@ -18,7 +18,6 @@ package com.android.server;
 
 import com.android.internal.app.IBatteryStats;
 import com.android.internal.app.ShutdownThread;
-import com.android.internal.telephony.ITelephony;
 import com.android.server.am.BatteryStatsService;
 
 import android.app.ActivityManagerNative;
@@ -50,7 +49,6 @@ import android.os.Power;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.RemoteException;
-import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.WorkSource;
 import android.os.SystemProperties;
@@ -352,15 +350,6 @@ public class PowerManagerService extends IPowerManager.Stub
         }
     }
     */
-
-    static ITelephony getTelephonyService() {
-        ITelephony telephonyService = ITelephony.Stub.asInterface(
-                ServiceManager.checkService(Context.TELEPHONY_SERVICE));
-        if (telephonyService == null) {
-            Log.w(TAG, "Unable to find ITelephony interface.");
-        }
-        return telephonyService;
-    }
 
     /**
      * This class works around a deadlock between the lock in PowerManager.WakeLock
@@ -1147,16 +1136,7 @@ public class PowerManagerService extends IPowerManager.Stub
             }
         }
     }
-    /*
-    static ITelephony getTelephonyService() {
-        ITelephony telephonyService = ITelephony.Stub.asInterface(
-                ServiceManager.checkService(Context.TELEPHONY_SERVICE));
-        if (telephonyService == null) {
-            Log.w(TAG, "Unable to find ITelephony interface.");
-        }
-        return telephonyService;
-    }
-    */
+
     private static String lockType(int type)
     {
         switch (type)
@@ -2331,18 +2311,6 @@ public class PowerManagerService extends IPowerManager.Stub
                 final boolean electrifying =
                         ((mElectronBeamAnimationOff && turningOff) ||
                          (mElectronBeamAnimationOn && turningOn));
-                // If telephone is ringing and not idle then we will jumpToTargetLocked instead
-                ITelephony telephonyService = getTelephonyService();
-                boolean telephonyIdleCheck = true;
-                if (telephonyService != null) {
-                    try {
-                        if (telephonyService.isRinging()) {
-                            telephonyIdleCheck = false;
-                        }
-                    } catch (RemoteException ex) {
-                        Log.w(TAG, "ITelephony threw RemoteException", ex);
-                    }
-                }
                 if (!electrifying && (mAnimateScreenLights || !turningOff)) {
                     long now = SystemClock.uptimeMillis();
                     boolean more = mScreenBrightness.stepLocked();
@@ -2353,14 +2321,14 @@ public class PowerManagerService extends IPowerManager.Stub
                     // It's pretty scary to hold mLocks for this long, and we should
                     // redesign this, but it works for now.
                     if (turningOff) {
-                        if (electrifying && telephonyIdleCheck) {
+                        if (electrifying) {
                             nativeStartSurfaceFlingerOffAnimation(
                                     mScreenOffReason == WindowManagerPolicy.OFF_BECAUSE_OF_PROX_SENSOR
                                     ? 0 : mAnimationSetting);
                         }
                         mScreenBrightness.jumpToTargetLocked();
                     } else if (turningOn) {
-                        if (electrifying && telephonyIdleCheck) {
+                        if (electrifying) {
                             jumpToTarget();
                             nativeStartSurfaceFlingerOnAnimation(mAnimationSetting);
                             animating = false;
