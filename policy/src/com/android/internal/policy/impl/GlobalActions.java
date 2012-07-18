@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2008 The Android Open Source Project
- * Copyright (C) 2011 David van Tonder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -203,7 +202,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // first: power off
         mItems.add(
             new SinglePressAction(
-                    R.drawable.ic_lock_power_off,
+                    com.android.internal.R.drawable.ic_lock_power_off,
                     R.string.global_action_power_off) {
 
                 public void onPress() {
@@ -214,21 +213,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 public boolean onLongPress() {
                     mWindowManagerFuncs.rebootSafeMode();
                     return true;
-                }
-
-                public boolean showDuringKeyguard() {
-                    return true;
-                }
-
-                public boolean showBeforeProvisioning() {
-                    return true;
-                }
-            });
-        // next: reboot
-        mItems.add(
-            new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
-                public void onPress() {
-                    mWindowManagerFuncs.reboot("null");
                 }
 
                 public boolean showDuringKeyguard() {

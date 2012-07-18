@@ -5163,12 +5163,6 @@ public class WindowManagerService extends IWindowManager.Stub
         ShutdownThread.rebootSafeMode(mContext, true);
     }
 
-    // Called by window manager policy.  Not exposed externally.
-    @Override
-    public void reboot(String reason) {
-        ShutdownThread.reboot(mContext,reason, true);
-    }
-
     public void setInputFilter(InputFilter filter) {
         mInputManager.setInputFilter(filter);
     }
