@@ -72,6 +72,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private boolean mEnableRingSilenceFallback = false;
 
     // current configuration state of keyboard and display
+    private int mKeyboardHidden;
     private int mCreationOrientation;
 
     private boolean mSilentMode;
@@ -448,6 +449,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mEnableMenuKeyInLockScreen = shouldEnableMenuKey();
         mCreationOrientation = configuration.orientation;
 
+        mKeyboardHidden = configuration.hardKeyboardHidden;
+
         if (LockPatternKeyguardView.DEBUG_CONFIGURATION) {
             Log.v(TAG, "***** CREATING LOCK SCREEN", new RuntimeException());
             Log.v(TAG, "Cur orient=" + mCreationOrientation
@@ -548,6 +551,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         Configuration newConfig = getResources().getConfiguration();
         if (newConfig.orientation != mCreationOrientation) {
             mCallback.recreateMe(newConfig);
+        } else if (newConfig.hardKeyboardHidden != mKeyboardHidden) {
+            mKeyboardHidden = newConfig.hardKeyboardHidden;
+            final boolean isKeyboardOpen = mKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO;
+            if (mUpdateMonitor.isKeyguardBypassEnabled() && isKeyboardOpen) {
+                mCallback.goToUnlockScreen();
+            }
         }
     }
 
