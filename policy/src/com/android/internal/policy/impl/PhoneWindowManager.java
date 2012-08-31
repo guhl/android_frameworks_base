@@ -416,6 +416,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     // Behavior of volbtn music controls
     boolean mVolBtnMusicControls;
+    // Behavior of cambtn music controls
+    boolean mCamBtnMusicControls;
+    // keeps track of long press state
     boolean mIsLongPress;
 
     private static final class PointerLocationInputEventReceiver extends InputEventReceiver {
@@ -594,6 +597,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private static final int MSG_DISPATCH_MEDIA_KEY_WITH_WAKE_LOCK = 3;
     private static final int MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK = 4;
     private static final int MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK = 5;
+    private static final int MSG_DISPATCH_CAMKEY_WITH_WAKE_LOCK = 6;
 
     private class PolicyHandler extends Handler {
         @Override
@@ -615,6 +619,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mIsLongPress = true;
                     dispatchMediaKeyWithWakeLockToAudioService((KeyEvent)msg.obj);
                     dispatchMediaKeyWithWakeLockToAudioService(KeyEvent.changeAction((KeyEvent)msg.obj, KeyEvent.ACTION_UP));
+                    break;
+                case MSG_DISPATCH_CAMKEY_WITH_WAKE_LOCK:
                     break;
             }
         }
@@ -640,6 +646,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.VOLUME_WAKE_SCREEN), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.CAMBTN_MUSIC_CONTROLS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.VOLBTN_MUSIC_CONTROLS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -1357,6 +1365,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT);
             mVolumeWakeScreen = (Settings.System.getInt(resolver,
                     Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
+            mCamBtnMusicControls = (Settings.System.getInt(resolver,
+                    Settings.System.CAMBTN_MUSIC_CONTROLS, 0) == 1);
             mVolBtnMusicControls = (Settings.System.getInt(resolver,
                     Settings.System.VOLBTN_MUSIC_CONTROLS, 1) == 1);
             mTrackballWakeScreen = (Settings.System.getInt(resolver,
@@ -3710,6 +3720,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         // Handle special keys.
         switch (keyCode) {
+            case KeyEvent.KEYCODE_CAMERA: {
+                if (!isScreenOn) {
+                    if (down) {
+
+                    } else {
+
+                    }
+                }
+                break;
+            }
             case KeyEvent.KEYCODE_ENDCALL: {
                 result &= ~ACTION_PASS_TO_USER;
                 if (down) {
