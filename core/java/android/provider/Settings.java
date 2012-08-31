@@ -2525,12 +2525,6 @@ public final class Settings {
         public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
 
         /**
-         * Whether or not camera button music controls should be enabled to play/pause media tracks
-         * @hide
-         */
-        public static final String CAMBTN_MUSIC_CONTROLS = "cambtn_music_controls";
-
-        /**
          * Whether national data roaming should be used.
          * @hide
          */

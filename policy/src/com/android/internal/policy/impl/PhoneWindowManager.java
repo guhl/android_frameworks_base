@@ -404,7 +404,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mHasMenuKey;
     boolean mHasAssistKey;
     boolean mHasAppSwitchKey;
-    boolean mCameraKeyPressable = false;
     
     int mPointerLocationMode = 0; // guarded by mLock
 
@@ -417,9 +416,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     // Behavior of volbtn music controls
     boolean mVolBtnMusicControls;
-    // Behavior of cambtn music controls
-    boolean mCamBtnMusicControls;
-    // keeps track of long press state
     boolean mIsLongPress;
 
     private static final class PointerLocationInputEventReceiver extends InputEventReceiver {
@@ -639,8 +635,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.VOLUME_WAKE_SCREEN), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.CAMBTN_MUSIC_CONTROLS), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.VOLBTN_MUSIC_CONTROLS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACCELEROMETER_ROTATION), false, this);
@@ -840,16 +834,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         };
     };
 
-    /**
-     * When a camera-key longpress expires, toggle play/pause based on key press
-     */
-    Runnable mCameraLongPress = new Runnable() {
-        public void run() {
-            // Shamelessly copied from Kmobs LockScreen controls, works for Pandora, etc...
-            sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-        };
-    };
-
     private void sendMediaButtonEvent(int code) {
         long eventtime = SystemClock.uptimeMillis();
         Intent keyIntent = new Intent(Intent.ACTION_MEDIA_BUTTON, null);
@@ -869,23 +853,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     void handleVolumeLongPressAbort() {
         mHandler.removeCallbacks(mVolumeUpLongPress);
         mHandler.removeCallbacks(mVolumeDownLongPress);
-    }
-
-    void handleCameraKeyDown() {
-        if (mCamBtnMusicControls) {
-            // if the camera key is not pressable, see if music is active
-            if (!mCameraKeyPressable) {
-                mCameraKeyPressable = isMusicActive();
-            }
-
-            if (mCameraKeyPressable) {
-                mHandler.postDelayed(mCameraLongPress, ViewConfiguration.getLongPressTimeout());
-            }
-        }
-    }
-
-    void handleCameraKeyUp() {
-        mHandler.removeCallbacks(mCameraLongPress);
     }
 
     private void interceptScreenshotChord() {
@@ -1433,8 +1400,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
             mVolBtnMusicControls = (Settings.System.getInt(resolver,
                     Settings.System.VOLBTN_MUSIC_CONTROLS, 1) == 1);
-            mCamBtnMusicControls = (Settings.System.getInt(resolver,
-                    Settings.System.CAMBTN_MUSIC_CONTROLS, 0) == 1);
             mTrackballWakeScreen = (Settings.System.getInt(resolver,
                     Settings.System.TRACKBALL_WAKE_SCREEN, 1) == 1);
             mTrackballUnlockScreen = (Settings.System.getInt(resolver,
@@ -3786,16 +3751,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         // Handle special keys.
         switch (keyCode) {
-            case KeyEvent.KEYCODE_CAMERA: {
-                if (!isScreenOn) {
-                    if (down) {
-                        handleCameraKeyDown();
-                    } else {
-                        handleCameraKeyUp();
-                    }
-                }
-                break;
-            }
             case KeyEvent.KEYCODE_ENDCALL: {
                 result &= ~ACTION_PASS_TO_USER;
                 if (down) {
