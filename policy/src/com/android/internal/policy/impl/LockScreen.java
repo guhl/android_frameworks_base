@@ -813,6 +813,15 @@ boolean mHomeUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(
         if (action != null) {
             String uri = Settings.System.getString(context.getContentResolver(), action);
             if (uri != null && runAction(context, uri) != ACTION_RESULT_NOTRUN) {
+                long[] pattern = getLongPressVibePattern(context);
+                if (pattern != null) {
+                    Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                    if (pattern.length == 1) {
+                        v.vibrate(pattern[0]);
+                    } else {
+                        v.vibrate(pattern, -1);
+                    }
+                }
                 return true;
             }
         }
@@ -845,6 +854,26 @@ boolean mHomeUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(
         } else {
             am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
         }
+    }
+
+    private static long[] getLongPressVibePattern(Context context) {
+        if (Settings.System.getInt(context.getContentResolver(),
+                Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) == 0) {
+            return null;
+        }
+
+        int[] defaultPattern = context.getResources().getIntArray(
+                com.android.internal.R.array.config_longPressVibePattern);
+        if (defaultPattern == null) {
+            return null;
+        }
+
+        long[] pattern = new long[defaultPattern.length];
+        for (int i = 0; i < defaultPattern.length; i++) {
+            pattern[i] = defaultPattern[i];
+        }
+
+        return pattern;
     }
 
     void updateConfiguration() {
