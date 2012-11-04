@@ -96,6 +96,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private boolean mSilentMode;
     private AudioManager mAudioManager;
     private boolean mEnableMenuKeyInLockScreen;
+    private boolean mUnlockKeyDown = false;
 
     private KeyguardStatusViewManager mStatusViewManager;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
@@ -593,7 +594,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 mContext.getContentResolver(),
                 Settings.System.TRACKBALL_UNLOCK_SCREEN, 1) == 1);
 
-boolean mHomeUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.HOME_UNLOCK_SCREEN, 0) == 1);
+    boolean mHomeUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.HOME_UNLOCK_SCREEN, 0) == 1);
 
     /**
      * @param context Used to setup the view.
@@ -743,6 +744,7 @@ boolean mHomeUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        mUnlockKeyDown = true;
         if (keyCode == KeyEvent.KEYCODE_BACK
                 || keyCode == KeyEvent.KEYCODE_HOME
                 || keyCode == KeyEvent.KEYCODE_MENU) {
@@ -754,10 +756,16 @@ boolean mHomeUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) ||
-            (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mTrackballUnlockScreen) ||
-            (keyCode == KeyEvent.KEYCODE_HOME && mHomeUnlockScreen)) {
-            mCallback.goToUnlockScreen();
+        int flags = event.getFlags();
+        // make sure the keydown is from a screen on state
+        if (mUnlockKeyDown) {
+            mUnlockKeyDown = false;
+            boolean mNotLongPress = (flags & KeyEvent.FLAG_CANCELED_LONG_PRESS) == 0;
+            if (mNotLongPress && ((keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen) ||
+                                  (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mTrackballUnlockScreen) ||
+                                  (keyCode == KeyEvent.KEYCODE_HOME && mHomeUnlockScreen))) {
+                mCallback.goToUnlockScreen();
+            }
         }
         return false;
     }
