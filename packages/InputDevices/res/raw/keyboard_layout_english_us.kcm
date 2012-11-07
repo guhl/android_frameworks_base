@@ -16,12 +16,18 @@
 # English keyboard layout.
 # This is a US English keyboard layout for HTC Desire Z phone.
 # It was tested on Russian localized device, some keys may be different.  
-# (c) NeverGone, September 15, 2012. Thanks to hellevgen.
+# (c) NeverGone, November 7, 2012. Thanks to hellevgen.
 #
+# Changes:
+# Nov 7, 2012
+# -- fixed comma/period being mixed up in English layout
+# -- new feature: pressing Shift+Search will interpret four characters preceding the cursor as Unicode code point number.
+# Sep 15, 2012
+# -- initial commit
 
 type OVERLAY
 key A              {
-    label:'A'       
+	label:'A'       
 	base:'a'       
 	shift, capslock:'A'       
 	alt: '!'       
@@ -224,8 +230,8 @@ key BUTTON_R2 {
   shift+alt: '<'
 }
 key PERIOD         {
-	label:','       
-	base:','       
+	label:'.'       
+	base:'.'       
 	shift, capslock:'.'       
 	alt: ','       
 	shift+alt:','       
@@ -267,6 +273,7 @@ key AT             {
 	shift+alt:'`'       
 }
 key SEARCH         {
+  shift: '\uEF00'
 	alt: '\uEF01'  
 	shift+alt:'\uEF01'  
 }
