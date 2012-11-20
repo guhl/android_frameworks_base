@@ -3208,7 +3208,233 @@ public class Camera {
             return split(str);
         }
 
+/**
+         * @hide
+         * Gets the current Touch AF/AEC setting.
+         *
+         * @return one of TOUCH_AF_AEC_XXX string constant. null if Touch AF/AEC
+         *         setting is not supported.
+         *
+         */
+        public String getTouchAfAec() {
+            return get(KEY_TOUCH_AF_AEC);
+        }
 
+        /**
+         * @hide
+         * Sets the current TOUCH AF/AEC setting.
+         *
+         * @param value TOUCH_AF_AEC_XXX string constants.
+         *
+         */
+        public void setTouchAfAec(String value) {
+            set(KEY_TOUCH_AF_AEC, value);
+        }
+
+       /**
+         * @hide
+         * Gets the supported Touch AF/AEC setting.
+         *
+         * @return a List of TOUCH_AF_AEC_XXX string constants. null if TOUCH AF/AEC
+         *         setting is not supported.
+         *
+         */
+        public List<String> getSupportedTouchAfAec() {
+            String str = get(KEY_TOUCH_AF_AEC + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+        /**
+         * @hide
+         * Sets the touch co-ordinate for Touch AEC.
+         *
+         * @param x  the x co-ordinate of the touch event
+         * @param y the y co-ordinate of the touch event
+         *
+         */
+        public void setTouchIndexAec(int x, int y) {
+            String v = Integer.toString(x) + "x" + Integer.toString(y);
+            set(KEY_TOUCH_INDEX_AEC, v);
+        }
+
+        /**
+         * @hide
+         * Returns the touch co-ordinates of the touch event.
+         *
+         * @return a Index object with the x and y co-ordinated
+         *          for the touch event
+         *
+         */
+        public Coordinate getTouchIndexAec() {
+            String pair = get(KEY_TOUCH_INDEX_AEC);
+            return strToCoordinate(pair);
+        }
+
+        /**
+         * @hide
+         * Sets the touch co-ordinate for Touch AF.
+         *
+         * @param x  the x co-ordinate of the touch event
+         * @param y the y co-ordinate of the touch event
+         *
+         */
+        public void setTouchIndexAf(int x, int y) {
+            String v = Integer.toString(x) + "x" + Integer.toString(y);
+            set(KEY_TOUCH_INDEX_AF, v);
+        }
+
+        /**
+         * @hide
+         * Returns the touch co-ordinates of the touch event.
+         *
+         * @return a Index object with the x and y co-ordinated
+         *          for the touch event
+         *
+         */
+        public Coordinate getTouchIndexAf() {
+            String pair = get(KEY_TOUCH_INDEX_AF);
+            return strToCoordinate(pair);
+        }
+
+        /**
+         * @hide
+         * Get Sharpness level
+         *
+         * @return sharpness level
+         */
+        public int getSharpness(){
+            return getInt(KEY_SHARPNESS);
+        }
+
+        /**
+         * @hide
+         * Set Sharpness Level
+         *
+         * @param sharpness level
+         */
+        public void setSharpness(int sharpness){
+            if((sharpness < 0) || (sharpness > getMaxSharpness()) )
+                throw new IllegalArgumentException(
+                        "Invalid Sharpness " + sharpness);
+
+            set(KEY_SHARPNESS, String.valueOf(sharpness));
+        }
+
+        /**
+         * @hide
+         * Get Max Sharpness Level
+         *
+         * @return max sharpness level
+         */
+        public int getMaxSharpness(){
+            return getInt(KEY_MAX_SHARPNESS);
+        }
+
+        /**
+         * @hide
+         * Get Contrast level
+         *
+         * @return contrast level
+         */
+        public int getContrast(){
+            return getInt(KEY_CONTRAST);
+        }
+
+        /**
+         * @hide
+         * Set Contrast Level
+         *
+         * @param contrast level
+         */
+        public void setContrast(int contrast){
+            if((contrast < 0 ) || (contrast > getMaxContrast()))
+                throw new IllegalArgumentException(
+                        "Invalid Contrast " + contrast);
+
+            set(KEY_CONTRAST, String.valueOf(contrast));
+        }
+
+        /**
+         * @hide
+         * Get Max Contrast Level
+         *
+         * @return max contrast level
+         */
+        public int getMaxContrast(){
+            return getInt(KEY_MAX_CONTRAST);
+        }
+
+        /**
+         * @hide
+         * Get Saturation level
+         *
+         * @return saturation level
+         */
+        public int getSaturation(){
+            return getInt(KEY_SATURATION);
+        }
+
+        /**
+         * @hide
+         * Set Saturation Level
+         *
+         * @param saturation level
+         */
+        public void setSaturation(int saturation){
+            if((saturation < 0 ) || (saturation > getMaxSaturation()))
+                throw new IllegalArgumentException(
+                        "Invalid Saturation " + saturation);
+
+            set(KEY_SATURATION, String.valueOf(saturation));
+        }
+
+        /**
+         * @hide
+         * Get Max Saturation Level
+         *
+         * @return max contrast level
+         */
+        public int getMaxSaturation(){
+            return getInt(KEY_MAX_SATURATION);
+        }
+
+        /**
+         * @hide
+         * Gets the current redeye reduction setting.
+         *
+         * @return one of REDEYE_REDUCTION_XXX string constant. null if redeye reduction
+         *         setting is not supported.
+         *
+         */
+        public String getRedeyeReductionMode() {
+            return get(KEY_REDEYE_REDUCTION);
+        }
+
+	/**
+         * @hide
+         * Sets the redeye reduction. Other parameters may be changed after changing
+         * redeye reduction. After setting redeye reduction,
+         * applications should call getParameters to know if some parameters are
+         * changed.
+         *
+         * @param value REDEYE_REDUCTION_XXX string constants.
+         *
+         */
+        public void setRedeyeReductionMode(String value) {
+            set(KEY_REDEYE_REDUCTION, value);
+        }
+        /**
+         * @hide
+         * Gets the supported redeye reduction modes.
+         *
+         * @return a List of REDEYE_REDUCTION_XXX string constant. null if redeye reduction
+         *         setting is not supported.
+         *
+         */
+        public List<String> getSupportedRedeyeReductionModes() {
+            String str = get(KEY_REDEYE_REDUCTION + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
         /**
          * Gets the current antibanding setting.
          *
@@ -3246,6 +3472,39 @@ public class Camera {
         }
 
         /**
+         * @hide
+         * Gets the frame rate mode setting.
+         *
+         * @return one of FRAME_RATE_XXX_MODE string constant. null if this
+         *         setting is not supported.
+         */
+        public String getPreviewFrameRateMode() {
+            return get(KEY_PREVIEW_FRAME_RATE_MODE);
+        }
+
+        /**
+         * @hide
+         * Sets the frame rate mode.
+         *
+         * @param value FRAME_RATE_XXX_MODE string constants.
+         */
+        public void setPreviewFrameRateMode(String value) {
+            set(KEY_PREVIEW_FRAME_RATE_MODE, value);
+        }
+
+        /**
+         * @hide
+         * Gets the supported frame rate modes.
+         *
+         * @return a List of FRAME_RATE_XXX_MODE string constant. null if this
+         *         setting is not supported.
+         */
+        public List<String> getSupportedPreviewFrameRateModes() {
+            String str = get(KEY_PREVIEW_FRAME_RATE_MODE + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+        /**
          * Gets the current scene mode setting.
          *
          * @return one of SCENE_MODE_XXX string constant. null if scene mode
@@ -3265,7 +3524,6 @@ public class Camera {
          * @see #SCENE_MODE_SPORTS
          * @see #SCENE_MODE_PARTY
          * @see #SCENE_MODE_CANDLELIGHT
-         * @see #SCENE_MODE_BARCODE
          */
         public String getSceneMode() {
             return get(KEY_SCENE_MODE);
@@ -3300,6 +3558,45 @@ public class Camera {
         }
 
         /**
+         * @hide
+         * Gets the current auto scene detection setting.
+         *
+         * @return one of SCENE_DETECT_XXX string constant. null if auto scene detection
+         *         setting is not supported.
+         *
+         */
+        public String getSceneDetectMode() {
+            return get(KEY_SCENE_DETECT);
+        }
+
+        /**
+         * @hide
+         * Sets the auto scene detect. Other parameters may be changed after changing
+         * scene detect. After setting auto scene detection,
+         * applications should call getParameters to know if some parameters are
+         * changed.
+         *
+         * @param value SCENE_DETECT_XXX string constants.
+         *
+         */
+        public void setSceneDetectMode(String value) {
+            set(KEY_SCENE_DETECT, value);
+        }
+
+        /**
+         * @hide
+         * Gets the supported auto scene detection modes.
+         *
+         * @return a List of SCENE_DETECT_XXX string constant. null if scene detection
+         *         setting is not supported.
+         *
+         */
+        public List<String> getSupportedSceneDetectModes() {
+            String str = get(KEY_SCENE_DETECT + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+        /**
          * Gets the current flash mode setting.
          *
          * @return current flash mode. null if flash mode setting is not
@@ -3315,6 +3612,19 @@ public class Camera {
         }
 
         /**
+         * @hide
+         * Gets the current hdr bracketing mode setting.
+         *
+         * @return current hdr bracketing mode.
+         * @see #KEY_AE_BRACKET_OFF
+         * @see #KEY_AE_BRACKET_HDR
+         * @see #KEY_AE_BRACKET_BRACKATING
+         */
+        public String getAEBracket() {
+            return get(KEY_AE_BRACKET_HDR);
+        }
+
+        /**
          * Sets the flash mode.
          *
          * @param value flash mode.
@@ -3322,6 +3632,16 @@ public class Camera {
          */
         public void setFlashMode(String value) {
             set(KEY_FLASH_MODE, value);
+        }
+
+        /**
+         * @hide
+         * Set HDR-Bracketing Level
+         *
+         * @param value HDR-Bracketing
+         */
+        public void setAEBracket(String value){
+            set(KEY_AE_BRACKET_HDR, value);
         }
 
         /**
@@ -3363,6 +3683,14 @@ public class Camera {
         public void setFocusMode(String value) {
             set(KEY_FOCUS_MODE, value);
         }
+
+        /**
+         * Gets the supported focus modes.
+         *
+         * @return a list of supported focus modes. This method will always
+         *         return a list with at least one element.
+         * @see #getFocusMode()
+         */
 
         /**
          * Gets the supported focus modes.
@@ -4124,6 +4452,18 @@ public class Camera {
         /**
          * @hide
          * Gets the supported Continuous AF modes.
+         * @hide
+         * Gets the supported selectable zone af setting.
+         *
+         * @return a List of SELECTABLE_ZONE_AF_XXX string constants. null if selectable zone af
+         *         setting is not supported.
+         */
+        public List<String> getSupportedSelectableZoneAf() {
+            String str = get(KEY_SELECTABLE_ZONE_AF + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+        /**
          *
          * @return a List of CONTINUOUS_AF_XXX string constant. null if continuous AF
          *         setting is not supported.
