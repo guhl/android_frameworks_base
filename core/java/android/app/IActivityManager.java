@@ -409,6 +409,9 @@ public interface IActivityManager extends IInterface {
 
     public void performIdleMaintenance() throws RemoteException;
 
+    public int pffCheckPermission(String permission, int pid, int uid)
+            throws RemoteException;
+
     /*
      * Private non-Binder interfaces
      */
@@ -696,4 +699,5 @@ public interface IActivityManager extends IInterface {
     int GET_PERSISTED_URI_PERMISSIONS_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+181;
     int APP_NOT_RESPONDING_VIA_PROVIDER_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+182;
     int GET_CALLING_PACKAGE_FOR_BROADCAST_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+183;
+    int PFF_CHECK_PERMISSION_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+184;
 }

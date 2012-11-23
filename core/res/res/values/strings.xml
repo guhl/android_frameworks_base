@@ -4526,4 +4526,18 @@
     <!-- Longer version of toast bar message when hiding the transient navigation bar (if room) -->
     <string name="transient_navigation_confirmation_long">Swipe from edge of screen to reveal system bar</string>
     <add-resource type="bool" name="config_hotswapCapable"></add-resource>
+
+    <!-- Guhl: privacy framework -->
+    <!-- Title of an application permission that lets an application view/edit revoked permissions. -->    
+    <string name="permlab_revokePermissions">Allows view and edit of revoked permissions. Not for use by normal applications.</string>
+    <!-- Description of an application permission that lets lets an application view/edit revoked permissions. -->
+    <string name="permdesc_revokePermissions">Allows read and write for revoked permissions. Not for use by normal applications.</string>    
+    <!-- Title of an application permission that lets an access the pff. -->
+    <string name="permlab_pffFrequency">Allows access to the real permission state i.e. GRANTED, REVOKED or SPOOFED.</string>
+    <!-- Description of an application permission that lets lets an application view/edit revoked permissions. -->
+    <string name="permdesc_pffFrequency">Allows access to the real permission state i.e. GRANTED, REVOKED or SPOOFED.</string>
+    <string name="spoof">Spoof</string>
+    <string name="grant">Grant</string>
+    <!-- Guhl: end privacy framework -->
+	
 </resources>
