@@ -3945,4 +3945,17 @@
 
   <!-- Stylus gestures -->
   <java-symbol type="bool" name="config_stylusGestures" />
+  
+  <!-- Guhl: privacy framework -->
+  <java-symbol type="id" name="editable_perm_icon" />
+  <java-symbol type="id" name="editable_permission" />
+  <java-symbol type="id" name="editable_permission_group" />
+  <java-symbol type="id" name="editable_permission_icon" />
+  <java-symbol type="id" name="editable_permissions_list" />
+  <java-symbol type="id" name="spoof_button" />
+  <java-symbol type="layout" name="app_editable_permission" />
+  <java-symbol type="layout" name="app_editable_permission_item" />
+  <java-symbol type="xml" name="spoofed_permissions" />
+  <java-symbol type="bool" name="config_enablePermissionsManagement" />
+  
 </resources>

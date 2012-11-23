@@ -1299,4 +1299,14 @@ public final class BridgeContext extends Context {
         Bridge.getLog().error(LayoutLog.TAG_UNSUPPORTED, "OBB not supported", null);
         return null;
     }
+
+    @Override
+    public int pffEnforceCallingOrSelfPermission(String permission, String message) {
+    	return 0;
+	}
+
+    @Override
+    public int pffCheckCallingOrSelfPermission(String permission) {
+		return 0;
+	} 
 }

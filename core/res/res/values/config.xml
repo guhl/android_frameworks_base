@@ -898,6 +898,11 @@
 
     <!-- Set to true to add links to Cell Broadcast app from Settings and MMS app. -->
     <bool name="config_cellBroadcastAppLinks">false</bool>
+    
+    <!-- Guhl CHANGES START HERE -->
+    
+    <!-- Enable mermissions managment -->
+	<bool name="config_enablePermissionsManagement">true</bool>
 
     <!-- CM CHANGES START HERE -->
 

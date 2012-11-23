@@ -1189,6 +1189,13 @@ final class Settings {
                     serializer.endTag(null, TAG_ITEM);
                 }
                 serializer.endTag(null, "perms");
+                serializer.startTag(null, "spoofed-perms");
+                for (String name : usr.spoofedPermissions) {
+                    serializer.startTag(null, "item");
+                    serializer.attribute(null, "name", name);
+                    serializer.endTag(null, "item");
+                }
+                serializer.endTag(null, "spoofed-perms");
                 serializer.endTag(null, "shared-user");
             }
 
@@ -1405,6 +1412,19 @@ final class Settings {
                 }
             }
             serializer.endTag(null, "perms");
+            serializer.startTag(null, "spoofed-perms");
+            if (pkg.sharedUser == null) {
+                // If this is a shared user, the permissions will
+                // be written there.  We still need to write an
+                // empty permissions list so permissionsFixed will
+                // be set.
+                for (final String name : pkg.spoofedPermissions) {
+                    serializer.startTag(null, "item");
+                    serializer.attribute(null, "name", name);
+                    serializer.endTag(null, "item");
+                }
+            }
+            serializer.endTag(null, "spoofed-perms");
         }
 
         serializer.endTag(null, "package");
@@ -1839,6 +1859,9 @@ final class Settings {
             String tagName = parser.getName();
             if (tagName.equals("perms")) {
                 readGrantedPermissionsLPw(parser, ps.grantedPermissions);
+            } else if (tagName.equals("spoofed-perms")) {
+                readGrantedPermissionsLPw(parser,
+                        ps.spoofedPermissions);
             } else {
                 PackageManagerService.reportSettingsProblem(Log.WARN,
                         "Unknown element under <updated-package>: " + parser.getName());
@@ -2049,6 +2072,9 @@ final class Settings {
                 } else if (tagName.equals("perms")) {
                     readGrantedPermissionsLPw(parser, packageSetting.grantedPermissions);
                     packageSetting.permissionsFixed = true;
+                } else if (tagName.equals("spoofed-perms")) {
+                    readGrantedPermissionsLPw(parser,
+                            packageSetting.spoofedPermissions);
                 } else {
                     PackageManagerService.reportSettingsProblem(Log.WARN,
                             "Unknown element under <package>: " + parser.getName());
@@ -2165,6 +2191,8 @@ final class Settings {
                     su.signatures.readXml(parser, mPastSignatures);
                 } else if (tagName.equals("perms")) {
                     readGrantedPermissionsLPw(parser, su.grantedPermissions);
+                } else if (tagName.equals("spoofed-perms")) {
+                    readGrantedPermissionsLPw(parser, su.spoofedPermissions);
                 } else {
                     PackageManagerService.reportSettingsProblem(Log.WARN,
                             "Unknown element under <shared-user>: " + parser.getName());
