@@ -1366,8 +1366,8 @@ public class NumberPicker extends LinearLayout {
             if (getMinValue() >= displayedValues.length) {
                 setMinValue(0);
             }
-            if (getMaxValue() > displayedValues.length) {
-                setMaxValue(displayedValues.length);
+            if (getMaxValue() >= displayedValues.length) {
+                setMaxValue(displayedValues.length - 1);
             }
         } else {
             mInputText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
