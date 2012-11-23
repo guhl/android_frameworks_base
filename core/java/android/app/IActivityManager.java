@@ -366,6 +366,8 @@ public interface IActivityManager extends IInterface {
 
     public long inputDispatchingTimedOut(int pid, boolean aboveSystem) throws RemoteException;
 
+    public int pffCheckPermission(String permission, int pid, int uid)
+            throws RemoteException;
     /*
      * Private non-Binder interfaces
      */
@@ -621,4 +623,5 @@ public interface IActivityManager extends IInterface {
     int REQUEST_BUG_REPORT_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+157;
     int INPUT_DISPATCHING_TIMED_OUT_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+158;
     int CLEAR_PENDING_BACKUP_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+159;
+    int PFF_CHECK_PERMISSION_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+160;    
 }
