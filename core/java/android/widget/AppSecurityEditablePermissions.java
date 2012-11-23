@@ -92,7 +92,7 @@ public class AppSecurityEditablePermissions extends AppSecurityPermissionsBase{
         }
         
         private void spoofPerm(final PermissionInfo pi, final TextView text) {
-            Log.w(TAG, "spoofPerm: pi.name="+pi.name);
+            Log.w(TAG, "spoofPerm: pi.name="+pi.name+"mPackageName="+mPackageName);
             if (!mSpoofedPerms.contains(pi.name)) {
                 mPm.setSpoofedPermissions(mPackageName,
                         addPermToList(mSpoofedPerms, pi));
@@ -100,8 +100,8 @@ public class AppSecurityEditablePermissions extends AppSecurityPermissionsBase{
         }
 
         private void unspoofPerm(final PermissionInfo pi, final TextView text) {
-            Log.w(TAG, "unspoofPerm: pi.name="+pi.name);
-            if (!mSpoofedPerms.contains(pi.name)) {
+            Log.w(TAG, "unspoofPerm: pi.name="+pi.name+"mPackageName="+mPackageName);
+            if (mSpoofedPerms.contains(pi.name)) {
                 mPm.setSpoofedPermissions(mPackageName,
                         removePermFromList(mSpoofedPerms, pi));
             }
@@ -128,121 +128,7 @@ public class AppSecurityEditablePermissions extends AppSecurityPermissionsBase{
         }
     }
     
-    private class EditableListener implements OnClickListener {
-
-        @Override
-        public void onClick(final View v) {
-            final int id = v.getId();
-            final PermissionInfo pi = (PermissionInfo) v.getTag(); 
-            switch (id) {
-/* removed the revoke functionality for now
-            case R.layout.app_editable_permission:
-                toggleRevoke(pi, (TextView)v.findViewById(R.id.editable_permission));
-                break;
-*/                
-            case R.id.spoof_button:
-                spoofPerm(pi, getTextViewFromButton(v));
-                break;
-/* removed the revoke functionality for now
-            case R.id.revoke_button:
-                revokePerm(pi, getTextViewFromButton(v));
-                break;
-            case R.id.grant_button:
-                grantPerm(pi, getTextViewFromButton(v));
-                break;
-*/
-            }
-        }
-
-        private void spoofPerm(final PermissionInfo pi, final TextView text) {
-            final SpannableString ss = (SpannableString) text.getText();
-            if (!mSpoofedPerms.contains(pi.name)) {
-                replaceSpans(ss, new UnderlineSpan());
-                mPm.setSpoofedPermissions(mPackageName,
-                        addPermToList(mSpoofedPerms, pi));
-            }
-        }
-
-        private void revokePerm(final PermissionInfo pi, final TextView text) {
-/* Guhl removed the revoke functionality for now        
-            final SpannableString ss = (SpannableString) text.getText();
-            if (!mRevokedPerms.contains(pi.name)) {
-                replaceSpans(ss, new StrikethroughSpan());
-                mPm.setRevokedPermissions(mPackageName,
-                        addPermToList(mRevokedPerms, pi));
-            }
-*/
-        }
-        private void grantPerm(final PermissionInfo pi, final TextView text) {
-            final SpannableString ss = (SpannableString) text.getText();
-            replaceSpans(ss, null);
-/* Guhl removed the revoke functionality for now        
-            if (mRevokedPerms.contains(pi.name)) {
-                mPm.setRevokedPermissions(mPackageName, 
-                        removePermFromList(mRevokedPerms, pi));
-            }
-*/
-            if (mSpoofedPerms.contains(pi.name)) {
-                mPm.setSpoofedPermissions(mPackageName,
-                        removePermFromList(mSpoofedPerms, pi));
-            }
-        }
-
-        private String[] removePermFromList(final HashSet<String> set, final PermissionInfo pi) {
-            set.remove(pi.name);
-            final String[] rp = new String[set.size()];
-            set.toArray(rp);
-            return rp;
-        }
-
-        private String[] addPermToList(final HashSet<String> set, final PermissionInfo pi) {
-            set.add(pi.name);
-            final String[] rp = new String[set.size()];
-            set.toArray(rp);
-            return rp;
-        }
-
-        private TextView getTextViewFromButton(final View from) {
-            final View llayout = (View)from.getParent();
-            final View rlayout = (View)llayout.getParent();
-            return (TextView) rlayout.findViewById(R.id.editable_permission);
-        }
-
-        private void toggleRevoke(final PermissionInfo pi, final TextView text) {
-            final SpannableString ss = (SpannableString) text.getText();
-
-/* Guhl removed the revoke functionality for now        
-            if (mRevokedPerms.contains(pi.name)) {
-                mPm.setRevokedPermissions(mPackageName,
-                        removePermFromList(mRevokedPerms, pi));
-                replaceSpans(ss, null);
-            }
-            else {
-                mRevokedPerms.add(pi.name);
-                mPm.setRevokedPermissions(mPackageName,
-                        addPermToList(mRevokedPerms, pi));
-                replaceSpans(ss, new StrikethroughSpan());
-            }
-*/
-        }
-
-        private void replaceSpans(final SpannableString ss, final Object newSpan) {
-            final StrikethroughSpan[] spans = ss.getSpans(0, ss.length(), StrikethroughSpan.class);
-            for (StrikethroughSpan span: spans) {
-                ss.removeSpan(span);
-            }
-            final UnderlineSpan[] uspans = ss.getSpans(0, ss.length(), UnderlineSpan.class);
-            for (UnderlineSpan span: uspans) {
-                ss.removeSpan(span);
-            }
-            if (newSpan != null) {
-                ss.setSpan(newSpan, 0, ss.length(), 0);
-            }
-        }
-    }
-
     private final static String TAG = "AppSecurityEditablePermissions";
-    private EditableListener mEditableListener = new EditableListener();
     private EditableChangeListener mEditableChangeListener = new EditableChangeListener();
     private boolean localLOGV = false;
     private Context mContext;
@@ -516,20 +402,10 @@ public class AppSecurityEditablePermissions extends AppSecurityPermissionsBase{
                 spoofSwitch.setText("Spoof");
                 spoofSwitch.setTag(pi);
                 spoofSwitch.setOnCheckedChangeListener(mEditableChangeListener);
-//                View spoofButton = (TextView) ePermView.findViewById(R.id.spoof_button);
-//                View grantButton = (TextView) ePermView.findViewById(R.id.grant_button);
-//                View revokeButton = (TextView) ePermView.findViewById(R.id.revoke_button);
-//                spoofButton.setOnClickListener(mEditableListener);
-//                grantButton.setOnClickListener(mEditableListener);
-//                revokeButton.setOnClickListener(mEditableListener);
                 editableImgView.setImageDrawable(icon);
                 CharSequence permDesc = pi.loadLabel(mPm);
                 SpannableString text = new SpannableString(permDesc + " (" + pi.name + ")");
-                if (mRevokedPerms.contains(pi.name)) {
-                    text.setSpan(new StrikethroughSpan(), 0, text.length(), 0);
-                }
-                else if (mSpoofedPerms.contains(pi.name)) {
-//                    text.setSpan(new UnderlineSpan(), 0, text.length(), 0);
+                if (mSpoofedPerms.contains(pi.name)) {
                     spoofSwitch.setChecked(true);
                 } else {
                     spoofSwitch.setChecked(false);
@@ -540,20 +416,9 @@ public class AppSecurityEditablePermissions extends AppSecurityPermissionsBase{
                 editableImgView.setVisibility(View.GONE);
                 ePermView.setClickable(true);
                 ePermView.setTag(pi);
-                ePermView.setOnClickListener(mEditableListener);
                 ePermView.setId(R.layout.app_editable_permission);
-//                spoofButton.setTag(pi);
-/* Guhl no revoke for now
-                grantButton.setTag(pi);
-                revokeButton.setTag(pi);
-*/
                 permDescView.addView(ePermView);
                 spoofSwitch.setVisibility(mSpoofablePerms.contains(pi.name) ? View.VISIBLE : View.GONE);
-//                spoofButton.setVisibility(mSpoofablePerms.contains(pi.name) ? View.VISIBLE : View.GONE);
-//                spoofButton.setTag(pi);
-/* Guhl no revoke for now
-                revokeButton.setTag(pi);
-*/
             }
             permDescView.setVisibility(View.VISIBLE);
         } else {
