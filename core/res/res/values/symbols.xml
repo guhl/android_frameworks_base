@@ -1826,4 +1826,8 @@
   <java-symbol type="id" name="spoof_button" />
   <!-- Guhl: end privacy framework -->
   
+  <!-- Developer settings - Kill app back press -->
+  <java-symbol type="integer" name="config_backKillTimeout" /> 
+  <java-symbol type="string" name="app_killed_message" />
+
 </resources>
