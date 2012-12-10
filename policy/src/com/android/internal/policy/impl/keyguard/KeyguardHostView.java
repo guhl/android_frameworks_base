@@ -39,6 +39,7 @@ import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.AttributeSet;
