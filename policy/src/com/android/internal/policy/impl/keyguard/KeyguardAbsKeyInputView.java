@@ -32,7 +32,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.os.UserHandle;
 
 import com.android.internal.R;
 import com.android.internal.widget.LockPatternUtils;
@@ -77,10 +76,6 @@ public abstract class KeyguardAbsKeyInputView extends LinearLayout
             reset();
         }
     }
-
-    boolean mTrackballUnlockScreen = (Settings.System.getIntForUser(
-                mContext.getContentResolver(),
-                Settings.System.TRACKBALL_UNLOCK_SCREEN, 1, UserHandle.USER_CURRENT) == 1);
 
     public void reset() {
         // start fresh
@@ -195,9 +190,7 @@ public abstract class KeyguardAbsKeyInputView extends LinearLayout
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mTrackballUnlockScreen) {
         mCallback.userActivity(0);
-        }
         return false;
     }
 
