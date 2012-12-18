@@ -150,12 +150,6 @@ public class KeyguardViewManager {
                 int keyCode = event.getKeyCode();
                 int action = event.getAction();
 
-                    case KeyEvent.KEYCODE_DPAD_CENTER:
-                        if (mKeyguardView.handleTrackpadKey()) {
-                            return true;
-                        }
-                        break;
-                }
                 if (action == KeyEvent.ACTION_DOWN) {
                     if (handleKeyDown(keyCode, event)) {
                         return true;
