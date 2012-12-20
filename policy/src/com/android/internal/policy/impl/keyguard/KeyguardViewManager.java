@@ -158,10 +158,6 @@ public class KeyguardViewManager {
                     if (handleKeyUp(keyCode, event)) {
                         return true;
                     }
-                } else if (action == KeyEvent.KEYCODE_DPAD_CENTER) {
-                    if (mKeyguardView.handleTrackpadKey()) {
-                        return true;
-                    }
                 }
             }
             return super.dispatchKeyEvent(event);
@@ -219,6 +215,10 @@ public class KeyguardViewManager {
                     }
                 case KeyEvent.KEYCODE_MENU:
                     if (mKeyguardView.handleMenuKey()) {
+                        return true;
+                    }
+                case KeyEvent.KEYCODE_DPAD_CENTER:
+                    if (mKeyguardView.handleTrackpadKey()) {
                         return true;
                     }
             }
