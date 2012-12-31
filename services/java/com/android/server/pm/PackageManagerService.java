@@ -7055,8 +7055,8 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     
     public String[] getSpoofedPermissions(final String pkgName) {
-        mContext.enforceCallingOrSelfPermission(
-                android.Manifest.permission.REVOKE_PERMISSIONS, null);
+//        mContext.enforceCallingOrSelfPermission(
+//                android.Manifest.permission.REVOKE_PERMISSIONS, null);
 
         String[] result = null; 
         synchronized (mPackages) {
@@ -7076,8 +7076,8 @@ public class PackageManagerService extends IPackageManager.Stub {
     }
     
     public void setSpoofedPermissions(final String pkgName, final String[] perms) {
-        mContext.enforceCallingOrSelfPermission(
-                android.Manifest.permission.REVOKE_PERMISSIONS, null);
+//        mContext.enforceCallingOrSelfPermission(
+//                android.Manifest.permission.REVOKE_PERMISSIONS, null);
         synchronized (mPackages) {
             final PackageParser.Package p = mPackages.get(pkgName);
             if ((p.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
@@ -7086,8 +7086,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                     final GrantedPermissions gp = ps.sharedUser == null ? ps : ps.sharedUser;
                     gp.spoofedPermissions.clear();
                     gp.spoofedPermissions.addAll(Arrays.asList(perms));
-//                    gp.revokedPermissions.removeAll(gp.spoofedPermissions);
-//                    updateRevokedGids(gp);
                     mSettings.writeLPr();
                 }
             }
