@@ -3,6 +3,7 @@ package com.android.systemui.quicksettings;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,7 @@ public class NfcTile extends QuickSettingsTile {
             QuickSettingsController qsc) {
         super(context, inflater, container, qsc);
 
-        setState(NFC_ADAPTER_UNKNOWN);
+        setTileState(getNfcState());
 
         mOnClick = new View.OnClickListener() {
             @Override
@@ -53,7 +54,7 @@ public class NfcTile extends QuickSettingsTile {
     }
 
     private void applyNfcChanges() {
-        updateTileState();
+        setTileState(getNfcState());
         updateQuickSettings();
     }
 
@@ -71,13 +72,10 @@ public class NfcTile extends QuickSettingsTile {
         }
     }
 
-    private void updateTileState() {
+    private void setTileState(int state) {
         // Get the initial label
         mLabel = mContext.getString(R.string.quick_settings_nfc);
-        setState(getNfcState());
-    }
 
-    private void setState(int state) {
         switch (state) {
         case NfcAdapter.STATE_TURNING_ON:
         case NfcAdapter.STATE_ON:
@@ -93,11 +91,13 @@ public class NfcTile extends QuickSettingsTile {
     }
 
     private int getNfcState() {
-        if (mNfcAdapter != null || (mNfcAdapter = NfcAdapter.getDefaultAdapter(mContext)) != null) {
-            return mNfcAdapter.getAdapterState();
-        } else {
-            Log.d(TAG, "No NFC adapter available");
-            return NFC_ADAPTER_UNKNOWN;
+        if (mNfcAdapter == null) {
+            try {
+                mNfcAdapter = NfcAdapter.getNfcAdapter(mContext);
+            } catch (UnsupportedOperationException e) {
+                return NFC_ADAPTER_UNKNOWN;
+            }
         }
+        return mNfcAdapter.getAdapterState();
     }
 }
