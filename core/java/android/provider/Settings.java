@@ -1584,7 +1584,7 @@ public final class Settings {
          * @hide
          */
         public static final String MMS_AUTO_RETRIEVAL = "mms_auto_retrieval";
-        
+
         /**
          * Allows automatic retrieval of mms contents during roaming
          * <p>Type: INT</p>
@@ -3121,6 +3121,8 @@ public final class Settings {
             WIFI_STATIC_NETMASK,
             WIFI_STATIC_DNS1,
             WIFI_STATIC_DNS2,
+            MMS_AUTO_RETRIEVAL,
+            MMS_AUTO_RETRIEVAL_ON_ROAMING,
             BLUETOOTH_DISCOVERABILITY,
             BLUETOOTH_DISCOVERABILITY_TIMEOUT,
             DIM_SCREEN,
