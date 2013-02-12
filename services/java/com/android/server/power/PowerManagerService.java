@@ -33,7 +33,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -148,7 +147,6 @@ public final class PowerManagerService extends IPowerManager.Stub
     // minimum screen off timeout should be longer than this.
     private static final int SCREEN_DIM_DURATION = 7 * 1000;
     private static final int BUTTON_ON_DURATION = 5 * 1000;
-    private static final int KEYBOARD_ON_DURATION = 9 * 1000;
 
     // The maximum screen dim time expressed as a ratio relative to the screen
     // off timeout.  If the screen off timeout is very short then we want the
@@ -189,7 +187,6 @@ public final class PowerManagerService extends IPowerManager.Stub
     private DreamManagerService mDreamManager;
     private LightsService.Light mAttentionLight;
     private LightsService.Light mButtonsLight;
-    private LightsService.Light mKeyboardLight;
 
     private final Object mLock = new Object();
 
@@ -452,8 +449,6 @@ public final class PowerManagerService extends IPowerManager.Stub
             mSettingsObserver = new SettingsObserver(mHandler);
             mAttentionLight = mLightsService.getLight(LightsService.LIGHT_ID_ATTENTION);
             mButtonsLight = mLightsService.getLight(LightsService.LIGHT_ID_BUTTONS);
-            mKeyboardLight = mLightsService.getLight(LightsService.LIGHT_ID_KEYBOARD);
-
 
             // Register for broadcasts from other components of the system.
             IntentFilter filter = new IntentFilter();
@@ -1317,14 +1312,6 @@ public final class PowerManagerService extends IPowerManager.Stub
                             if (brightness != 0) {
                                 nextTimeout = now + BUTTON_ON_DURATION;
                             }
-                        }
-                        if (now > mLastUserActivityTime + KEYBOARD_ON_DURATION) {
-                            mKeyboardLight.setBrightness(0);
-                        } else if (mContext.getResources().getConfiguration().hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_YES){
-                            mKeyboardLight.setBrightness(mDisplayPowerRequest.screenBrightness);
-                            nextTimeout = now + KEYBOARD_ON_DURATION;
-                        } else if (mContext.getResources().getConfiguration().hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES){
-                            mKeyboardLight.setBrightness(0);
                         }
                         mUserActivitySummary |= USER_ACTIVITY_SCREEN_BRIGHT;
                     } else {
