@@ -161,12 +161,12 @@ public class KeyguardViewManager {
                         return true;
                     } else if (keyCode == KeyEvent.KEYCODE_MENU && mKeyguardView.handleMenuKey()) {
                         return true;
+                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mKeyguardView.handleTrackpadKey()) {
+                        return true;
                     }
                 }
                 // Always process media keys, regardless of focus
                 if (mKeyguardView.dispatchKeyEvent(event)) {
-                    return true;
-                } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mKeyguardView.handleTrackpadKey()) {
                     return true;
                 }
             }
