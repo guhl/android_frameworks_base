@@ -1911,6 +1911,9 @@
   <java-symbol type="string" name="config_deviceKeyHandlerClass" />
   <java-symbol type="string" name="config_deviceDockBatteryHandlerClass" />
 
+  <!-- Reboot confirmation string -->
+  <java-symbol type="string" name="reboot_confirm" />
+
   <!-- Guhl: privacy framework -->
   <java-symbol type="xml" name="spoofed_permissions" />
   <java-symbol type="bool" name="config_enablePermissionsManagement" />

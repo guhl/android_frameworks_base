@@ -177,7 +177,7 @@ public abstract class ContentProvider implements ComponentCallbacks2 {
      */
     class Transport extends ContentProviderNative {
         static final String PFF_LOG_TAG = "PFF_CONTENT_PROVIDER_TRANSPORT";
-    	static final int pff_dbg_level = 3;
+    	static final int pff_dbg_level = 1;
         
         ContentProvider getContentProvider() {
             return ContentProvider.this;

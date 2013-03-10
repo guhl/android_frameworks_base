@@ -48,6 +48,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.inputmethodservice.InputMethodService;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.IPowerManager;
@@ -707,7 +708,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 }
                 mQS.setService(this);
                 mQS.setBar(mStatusBarView);
-                mQS.updateResources();
+                mQS.setupQuickSettings();
 
                 // Start observing for changes
                 mTilesChangedObserver = new TilesChangedObserver(mHandler);
@@ -1091,7 +1092,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                 mHandler.sendEmptyMessage(MSG_HIDE_INTRUDER);
             }
 
-            if (CLOSE_PANEL_WHEN_EMPTIED && mNotificationData.size() == 0 && !mAnimating) {
+            if (CLOSE_PANEL_WHEN_EMPTIED && mNotificationData.size() == 0 && !mAnimating
+                    && !isShowingSettings()) {
                 animateCollapsePanels();
             }
         }
@@ -2605,11 +2607,9 @@ public class PhoneStatusBar extends BaseStatusBar {
             String action = intent.getAction();
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
                 int flags = CommandQueue.FLAG_EXCLUDE_NONE;
-                if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
-                    String reason = intent.getStringExtra("reason");
-                    if (reason != null && reason.equals(SYSTEM_DIALOG_REASON_RECENT_APPS)) {
-                        flags |= CommandQueue.FLAG_EXCLUDE_RECENTS_PANEL;
-                    }
+                String reason = intent.getStringExtra("reason");
+                if (reason != null && reason.equals(SYSTEM_DIALOG_REASON_RECENT_APPS)) {
+                    flags |= CommandQueue.FLAG_EXCLUDE_RECENTS_PANEL;
                 }
                 animateCollapsePanels(flags);
             }
@@ -2911,8 +2911,13 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         @Override
         public void onChange(boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
             if (mSettingsContainer != null) {
-                mQS.updateResources();
+                mQS.setupQuickSettings();
             }
         }
 
