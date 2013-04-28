@@ -1315,6 +1315,7 @@ final class ApplicationPackageManager extends PackageManager {
         }
         return false;    	
     }
+    
     @Override
     public String[] getSpoofedPermissions(String packageName) {
         try {
@@ -1333,6 +1334,47 @@ final class ApplicationPackageManager extends PackageManager {
             // Should never happen!
         }
     }
+
+    @Override
+    public String[] getRevokeablePermissions() {
+        try {
+            return mPM.getRevokeablePermissions();
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+        return new String[0];
+    }
+
+    @Override
+    public boolean isRevokeablePermission(String perm) {
+       try {
+            return mPM.isRevokeablePermission(perm);
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+        return false;
+    }
+
+    @Override
+    public String[] getRevokedPermissions(String packageName) {
+        try {
+               return mPM.getRevokedPermissions(packageName);
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+        return new String[0];
+    }
+
+    @Override
+    public void setRevokedPermissions(String packageName, String[] perms) {
+        try {
+               mPM.setRevokedPermissions(packageName, perms);
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+    }
+
+    
     
     private final ContextImpl mContext;
     private final IPackageManager mPM;

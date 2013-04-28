@@ -616,7 +616,8 @@ public class MockPackageManager extends PackageManager {
 	public boolean isSpoofablePermission(final String perm)	 {
 		throw new UnsupportedOperationException();
 	}
-    /**
+
+	/**
 	* @hide
 	*/
 	@Override
@@ -631,4 +632,37 @@ public class MockPackageManager extends PackageManager {
 	public void setSpoofedPermissions(String packageName, String[] perms) {
 		throw new UnsupportedOperationException();
 	}    
+
+    /**
+	* @hide
+	*/
+	@Override
+    public String[] getRevokeablePermissions() {
+		throw new UnsupportedOperationException();
+	}
+	
+    /**
+	* @hide
+	*/
+	@Override
+	public boolean isRevokeablePermission(final String perm)	 {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	* @hide
+	*/
+	@Override
+	public String[] getRevokedPermissions(String packageName) {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	* @hide
+	*/
+	@Override
+	public void setRevokedPermissions(String packageName, String[] perms) {
+		throw new UnsupportedOperationException();
+	}
+
 }

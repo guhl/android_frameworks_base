@@ -392,10 +392,18 @@ interface IPackageManager {
 	
     String[] getSpoofedPermissions(String packageName);
 
-    void setSpoofedPermissions(String packageName, in String[] perms);
+    void setSpoofedPermissions(String packageName, in String[] perms);  
 
     int pffCheckPermission(String permName, String pkgName);
 
     int pffCheckUidPermission(String pkgName, int uid);
+
+    String[] getRevokeablePermissions();
+
+    boolean isRevokeablePermission(String perm);
+
+    String[] getRevokedPermissions(String packageName);
+
+    void setRevokedPermissions(String packageName, in String[] perms);
     
 }
