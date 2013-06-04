@@ -1751,6 +1751,13 @@ public final class Settings {
         public static final String AUTO_BRIGHTNESS_RESPONSIVENESS = "auto_brightness_responsiveness";
 
         /**
+         * Force Hardware Keyboard Backlight
+         *
+         * @hide
+         */
+        public static final String FORCE_KEYBOARD_LIGHT = "force_keyboard_light";
+
+        /**
          * Whether to enable the electron beam animation when turning screen on
          *
          * @hide */
