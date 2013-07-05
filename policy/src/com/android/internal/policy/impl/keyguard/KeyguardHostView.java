@@ -34,6 +34,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.UserInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -144,7 +145,6 @@ public class KeyguardHostView extends KeyguardViewBase {
         mAppWidgetHost = new AppWidgetHost(
                 context, APPWIDGET_HOST_ID, mOnClickHandler, Looper.myLooper());
         mAppWidgetHost.setUserId(mUserId);
-        cleanupAppWidgetIds();
 
         mAppWidgetManager = AppWidgetManager.getInstance(mContext);
         mSecurityModel = new KeyguardSecurityModel(context);
@@ -158,6 +158,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             mCameraDisabled = dpm.getCameraDisabled(null);
         }
 
+        cleanupAppWidgetIds();
         mSafeModeEnabled = LockPatternUtils.isSafeModeEnabled();
         mUserSetupCompleted = Settings.Secure.getIntForUser(mContext.getContentResolver(),
                 Settings.Secure.USER_SETUP_COMPLETE, 0, UserHandle.USER_CURRENT) != 0;
@@ -187,9 +188,22 @@ public class KeyguardHostView extends KeyguardViewBase {
         // that are triggered by deleteAppWidgetId, which is why we're doing this
         int[] appWidgetIdsInKeyguardSettings = mLockPatternUtils.getAppWidgets();
         int[] appWidgetIdsBoundToHost = mAppWidgetHost.getAppWidgetIds();
+        int fallbackWidgetId = mLockPatternUtils.getFallbackAppWidgetId();
         for (int i = 0; i < appWidgetIdsBoundToHost.length; i++) {
             int appWidgetId = appWidgetIdsBoundToHost[i];
             if (!contains(appWidgetIdsInKeyguardSettings, appWidgetId)) {
+                if (appWidgetId == fallbackWidgetId) {
+                    if (widgetsDisabledByDpm()) {
+                        // Ignore attempts to delete the fallback widget when widgets
+                        // are disabled
+                        continue;
+                    } else {
+                        // Reset fallback widget id in the event that widgets have been
+                        // enabled, and fallback widget is being deleted
+                        mLockPatternUtils.writeFallbackAppWidgetId(
+                                AppWidgetManager.INVALID_APPWIDGET_ID);
+                    }
+                }
                 Log.d(TAG, "Found a appWidgetId that's not being used by keyguard, deleting id "
                         + appWidgetId);
                 mAppWidgetHost.deleteAppWidgetId(appWidgetId);
@@ -447,7 +461,8 @@ public class KeyguardHostView extends KeyguardViewBase {
             if (deletePermanently) {
                 final int appWidgetId = ((KeyguardWidgetFrame) v).getContentAppWidgetId();
                 if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID &&
-                        appWidgetId != LockPatternUtils.ID_DEFAULT_STATUS_WIDGET) {
+                        appWidgetId != LockPatternUtils.ID_DEFAULT_STATUS_WIDGET &&
+                        appWidgetId != mLockPatternUtils.getFallbackAppWidgetId()) {
                     mAppWidgetHost.deleteAppWidgetId(appWidgetId);
                 }
             }
@@ -645,15 +660,22 @@ public class KeyguardHostView extends KeyguardViewBase {
      * @param turningOff true if the device is being turned off
      */
     void showPrimarySecurityScreen(boolean turningOff) {
-        SecurityMode securityMode = mSecurityModel.getSecurityMode();
-        if (DEBUG) Log.v(TAG, "showPrimarySecurityScreen(turningOff=" + turningOff + ")");
-        if (!turningOff &&
-                KeyguardUpdateMonitor.getInstance(mContext).isAlternateUnlockEnabled()) {
-            // If we're not turning off, then allow biometric alternate.
-            // We'll reload it when the device comes back on.
-            securityMode = mSecurityModel.getAlternateFor(securityMode);
+        boolean hardwareKeyboard = getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
+        boolean hardKeyboardHidden = getResources().getConfiguration().hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES;
+
+        if (!hardwareKeyboard || hardwareKeyboard && hardKeyboardHidden) {
+            showSecurityScreen(SecurityMode.None);
+        } else {
+            SecurityMode securityMode = mSecurityModel.getSecurityMode();
+            if (DEBUG) Log.v(TAG, "showPrimarySecurityScreen(turningOff=" + turningOff + ")");
+            if (!turningOff &&
+                    KeyguardUpdateMonitor.getInstance(mContext).isAlternateUnlockEnabled()) {
+                // If we're not turning off, then allow biometric alternate.
+                // We'll reload it when the device comes back on.
+                securityMode = mSecurityModel.getAlternateFor(securityMode);
+            }
+            showSecurityScreen(securityMode);
         }
-        showSecurityScreen(securityMode);
     }
 
     /**
@@ -933,6 +955,24 @@ public class KeyguardHostView extends KeyguardViewBase {
     @Override
     public void onScreenTurnedOn() {
         if (DEBUG) Log.d(TAG, "screen on, instance " + Integer.toHexString(hashCode()));
+        boolean hardwareKeyboard = getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
+        boolean hardKeyboardHidden = getResources().getConfiguration().hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES;
+
+        if (hardwareKeyboard && !hardKeyboardHidden && SecurityMode.None == mCurrentSecuritySelection) {
+            boolean deferKeyguardDone = false;
+            if (mDismissAction != null) {
+                deferKeyguardDone = mDismissAction.onDismiss();
+                mDismissAction = null;
+            }
+            if (mViewMediatorCallback != null) {
+                if (deferKeyguardDone) {
+                    mViewMediatorCallback.keyguardDonePending();
+                } else {
+                    mViewMediatorCallback.keyguardDone(true);
+                }
+            }
+            return;
+        }
         showPrimarySecurityScreen(false);
         getSecurityView(mCurrentSecuritySelection).onResume(KeyguardSecurityView.SCREEN_ON);
 
