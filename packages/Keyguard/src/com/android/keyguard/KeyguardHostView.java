@@ -1714,6 +1714,12 @@ public class KeyguardHostView extends KeyguardViewBase {
         return homeOverride;
     }
 
+    private boolean shouldEnableTrackpadKey() {
+        final boolean TrackpadOverride = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.TRACKBALL_UNLOCK_SCREEN, 0) == 1;
+        return TrackpadOverride;
+    }
+
     public void goToWidget(int appWidgetId) {
         mAppWidgetToShow = appWidgetId;
         mSwitchPageRunnable.run();
@@ -1731,6 +1737,15 @@ public class KeyguardHostView extends KeyguardViewBase {
     public boolean handleHomeKey() {
         // The following enables the HOME key to work for testing automation
         if (shouldEnableHomeKey()) {
+            showNextSecurityScreenOrFinish(false);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean handleTrackpadKey() {
+        // The following enables the DPAD_CENTER key to work for testing automation
+        if (shouldEnableTrackpadKey()) {
             showNextSecurityScreenOrFinish(false);
             return true;
         }

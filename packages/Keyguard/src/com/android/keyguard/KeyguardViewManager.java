@@ -256,6 +256,8 @@ public class KeyguardViewManager {
                         return true;
                     } else if (keyCode == KeyEvent.KEYCODE_HOME && mKeyguardView.handleHomeKey()) {
                         return true;
+                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mKeyguardView.handleTrackpadKey()) {
+                        return true;
                     }
                 }
                 // Always process media keys, regardless of focus
