@@ -136,7 +136,7 @@ public abstract class KeyguardViewBase extends FrameLayout {
                     handleMediaKeyEvent(event);
                     return true;
                 }
-
+                case KeyEvent.KEYCODE_DPAD_CENTER:
                 case KeyEvent.KEYCODE_VOLUME_UP:
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
                 case KeyEvent.KEYCODE_VOLUME_MUTE: {

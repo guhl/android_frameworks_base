@@ -3315,6 +3315,18 @@ public final class Settings {
         public static final String VOLUME_KEYS_CONTROL_RING_STREAM = "volume_keys_control_ring_stream";
 
         /**
+         * Whether to wake the screen with the trackball. The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String TRACKBALL_WAKE_SCREEN = "trackball_wake_screen";
+
+        /**
+         * Whether to unlock the screen with the trackball. The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String TRACKBALL_UNLOCK_SCREEN = "trackball_unlock_screen";
+
+        /**
          * Action to perform when the home key is long-pressed.
          * (Default can be configured via config_longPressOnHomeBehavior)
          * 0 - Nothing
