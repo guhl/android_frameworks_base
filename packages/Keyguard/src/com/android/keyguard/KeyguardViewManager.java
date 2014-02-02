@@ -303,6 +303,8 @@ public class KeyguardViewManager {
                 if (action == KeyEvent.ACTION_DOWN) {
                     if (handleKeyDown(keyCode, event)) {
                         return true;
+                    } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mKeyguardView.handleTrackpadKey()) {
+                        return true;
                     }
                 } else if (action == KeyEvent.ACTION_UP) {
                     if (handleKeyUp(keyCode, event)) {
