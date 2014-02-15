@@ -29,6 +29,7 @@ import com.android.server.display.DisplayManagerService;
 import com.android.server.dreams.DreamManagerService;
 
 import android.Manifest;
+import android.app.AppOpsManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -688,6 +689,19 @@ public final class PowerManagerService extends IPowerManager.Stub
 
         final int uid = Binder.getCallingUid();
         final int pid = Binder.getCallingPid();
+
+        try {
+            if (mAppOps.checkOperation(AppOpsManager.OP_WAKE_LOCK, uid, packageName)
+                    != AppOpsManager.MODE_ALLOWED) {
+                Slog.d(TAG, "acquireWakeLock: ignoring request from " + packageName);
+                // For (ignore) accounting purposes
+                mAppOps.noteOperation(AppOpsManager.OP_WAKE_LOCK, uid, packageName);
+                // silent return
+                return;
+            }
+        } catch (RemoteException e) {
+        }
+
         final long ident = Binder.clearCallingIdentity();
         try {
             acquireWakeLockInternal(lock, flags, tag, packageName, ws, uid, pid);
@@ -916,6 +930,13 @@ public final class PowerManagerService extends IPowerManager.Stub
                 for (int index = 0; index < mWakeLocks.size(); index++) {
                     WakeLock wl = mWakeLocks.get(index);
                     if(wl != null) {
+                        if(wl.mTag.startsWith("*sync*") && wl.mOwnerUid == Process.SYSTEM_UID) {
+                            releaseWakeLockInternal(wl.mLock, wl.mFlags);
+                            index--;
+                            if (DEBUG_SPEW) Slog.v(TAG, "Internally releasing the wakelock"
+                                                      + "acquired by SyncManager");
+                            continue;
+                        }
                         // release the wakelock for the blocked uid
                         if (wl.mOwnerUid == uid || checkWorkSourceObjectId(uid, wl)) {
                             releaseWakeLockInternal(wl.mLock, wl.mFlags);
