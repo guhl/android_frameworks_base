@@ -360,9 +360,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mCameraSleepOnRelease;
     boolean mIsFocusPressed;
 
-    // Behavior of trackpad wake
-    boolean mTrackballWakeScreen;
-
     // Behavior of volbtn/camera music controls
     boolean mCameraMusicControls;
     boolean mVolBtnMusicControls;
@@ -1570,8 +1567,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mCameraSleepOnRelease = ((Settings.System.getIntForUser(resolver,
                     Settings.System.CAMERA_SLEEP_ON_RELEASE, 0, UserHandle.USER_CURRENT) == 1)
                     && mCameraWakeScreen);
-            mTrackballWakeScreen = (Settings.System.getIntForUser(resolver,
-                    Settings.System.TRACKBALL_WAKE_SCREEN, 1, UserHandle.USER_CURRENT) == 1);
             mVolBtnMusicControls = (Settings.System.getIntForUser(resolver,
                     Settings.System.VOLBTN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) == 1);
             mCameraMusicControls = ((Settings.System.getIntForUser(resolver,
